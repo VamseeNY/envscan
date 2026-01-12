@@ -7,6 +7,14 @@ from directory_scanner import scan_directory
 from graph_visualization import create_force_directed_graph
 from utils import get_safe_path
 
+# Try to import envscan detection (optional)
+try:
+    from envscan.detector import find_python_environments
+except Exception:
+    # Fallback when envscan package isn't available during development
+    def find_python_environments(path, max_depth=3, include_hidden=False, follow_symlinks=False):
+        return []
+
 # Set page configuration
 st.set_page_config(
     page_title="Directory Visualizer",
@@ -65,15 +73,22 @@ def main():
                         st.session_state.selected_directory = safe_path
                         dir_data = scan_directory(safe_path, depth_limit)
                         
+                        # Attempt to detect Python environments (non-blocking)
+                        try:
+                            detected_envs = find_python_environments(str(safe_path), max_depth=depth_limit, include_hidden=False, follow_symlinks=False)
+                        except Exception:
+                            detected_envs = []
+
                         progress_bar.progress(80)
                         progress_placeholder.text("Processing data for visualization...")
-                        
+
                         # Store data in session state
                         st.session_state.directory_data = dir_data
-                        
+                        st.session_state.detected_envs = detected_envs
+
                         progress_bar.progress(100)
                         progress_placeholder.text("Rendering visualization...")
-                        
+
                         # Refresh the page to show visualization
                         st.rerun()
                     except Exception as e:
@@ -105,6 +120,23 @@ def main():
             st.metric("Total Folders", stats["folder_count"])
         with col3:
             st.metric("Max Depth", stats["max_depth"])
+        
+        # Show detected python environments (from envscan)
+        with st.expander("Detected Python Environments"):
+            envs = st.session_state.get("detected_envs", [])
+            if envs:
+                for e in envs:
+                    path = e.get("path", "")
+                    env_type = e.get("type", "")
+                    name = e.get("name", "")
+                    python_ver = e.get("python", "")
+                    st.write(f"{path} — {env_type} — {name} — {python_ver}")
+                try:
+                    st.download_button("Export environments (JSON)", json.dumps(envs), file_name="envs.json")
+                except Exception:
+                    pass
+            else:
+                st.info("No Python environments detected.")
         
         # Help information
         with st.expander("How to use the visualization"):

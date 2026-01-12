@@ -1,8 +1,27 @@
 [project]
-name = "repl-nix-workspace"
+name = "envscan"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.11"
+description = "Scan directories to find Python virtual environments"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [ { name = "Vamsee Yashwanth", email = "vamsee.ny1@gmail.com" } ]
+requires-python = ">=3.8"
 dependencies = [
-    "streamlit>=1.44.1",
+    "click>=8.0"
 ]
+
+[project.optional-dependencies]
+web = ["streamlit>=1.44.1"]
+dev = ["pytest", "pre-commit"]
+
+[project.scripts]
+envscan = "cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/envscan"
+Repository = "https://github.com/yourusername/envscan"
+Documentation = "https://github.com/yourusername/envscan#readme"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"

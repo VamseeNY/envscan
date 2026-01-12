@@ -93,6 +93,75 @@ A Streamlit web application that visualizes folder directory structures as inter
    - Adjust the link strength using the slider
    - Click "Reset View" to reset the visualization
 
+---
+
+## CLI: envscan (new)
+
+`envscan` is a CLI tool that scans a directory for Python environments and reports them in the terminal.
+
+Basic usage:
+
+```bash
+# Scan current directory and print text results (default)
+envscan
+
+# Scan a specific path and print JSON
+envscan --path ./project --format json
+
+# Write JSON output to a file
+envscan --path ./project --format json --json-file results.json
+
+# Probe environments to get their Python version (optional)
+envscan --probe --verbose
+
+# Show installed version of envscan
+envscan --version
+```
+
+Options:
+- `--path, -p` : Path to scan (default `.`)
+- `--depth, -d` : Max recursion depth (default `3`)
+- `--format, -f` : Output format `text` or `json` (default `text`)
+- `--include-hidden` : Include hidden directories and files
+- `--follow-symlinks` : Follow symbolic links
+- `--probe` : Probe discovered environments to get Python version (optional, time-limited)
+  - Note: if probing fails for any environment, run with `--verbose` to see informational logs explaining the failure.
+- `--json-file` : Write JSON output to the given file
+- `--verbose` : Verbose output
+
+The CLI is implemented using `click` and the detection heuristics look for common markers (e.g., `pyvenv.cfg`, `conda-meta`, `Pipfile`, `.python-version`).
+
+---
+
+## Publishing to PyPI
+
+To publish on PyPI:
+
+1. Verify the package name is available (we checked `envscan` is currently available).
+2. Create an account on PyPI if you don't have one.
+3. Create a PyPI API token ("Programmatic API token") and add it as `PYPI_API_TOKEN` in your repository's Secrets (Settings → Secrets → Actions).
+4. Tag a release and push the tag, e.g.:
+
+```bash
+git add -A ; git commit -m "Release v0.1.0" ; git tag v0.1.0 ; git push origin main --tags
+```
+
+5. The GitHub Actions `release.yml` workflow will build and publish the package to PyPI when it sees a `v*.*.*` tag.
+
+Local publish (alternative):
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+python -m twine upload dist/*
+```
+
+Notes:
+- Ensure `pyproject.toml` contains accurate metadata (authors, license, README, homepage). The `streamlit` dependency is optional in `web` extras.
+- We recommend a small test release (0.1.0) and then iterating.
+
+---
+
 ## File Structure
 
 ```
