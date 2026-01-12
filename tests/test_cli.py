@@ -1,6 +1,6 @@
 import json
 from click.testing import CliRunner
-from cli.main import main
+from envscan.cli import main
 
 
 def test_cli_no_envs(tmp_path):

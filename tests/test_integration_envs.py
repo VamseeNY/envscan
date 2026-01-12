@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from click.testing import CliRunner
-from cli.main import main
+from envscan.cli import main
 
 
 def test_integration_detects_two_envs(tmp_path):
