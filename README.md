@@ -60,8 +60,6 @@ MIT
 
 ---
 
-*This README replaces the original Streamlit-centric content and focuses on the CLI usage and packaging.*
-
 
 ### Extending Functionality
 
