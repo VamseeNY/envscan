@@ -27,7 +27,13 @@ jobs:
           python -m pip --version 2>&1 | tee -a install.log
           python -m pip install -e . -v 2>&1 | tee -a install.log
           python -m pip install pytest -v 2>&1 | tee -a install.log
+      - name: Ensure install log
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          if [ ! -f install.log ]; then echo "install.log not created" > install.log; fi
       - name: Upload install log
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: install-log-${{ matrix.python-version }}-${{ matrix.os }}
